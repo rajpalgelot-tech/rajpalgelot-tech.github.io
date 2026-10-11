@@ -528,16 +528,6 @@ img { display: block; max-width: 100%; }
 /* once hovered, the cybernetic layer stays locked on, like the reference */
 .portrait-canvas.scanned .portrait-scan { opacity: 1; }
 
-/* cursor-following cyber mask, drawn procedurally on a canvas */
-.portrait-mask-canvas {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 6;
-  pointer-events: none;
-}
-
 .hud-corner {
   position: absolute;
   width: 26px;

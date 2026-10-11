@@ -5,7 +5,6 @@ import {
   githubProfileUrl, linkedinUrl, instagramUrl, developer
 } from './data';
 import { stackIcon, glyph } from './icons';
-import { mountPortraitMask } from './mask';
 import { applyFilter, stepIndex, tickerLine, formatClock, mailtoLink } from './lib';
 
 const el = (tag: string, cls = '', textContent = ''): HTMLElement => {
@@ -810,8 +809,6 @@ export function buildApp(root: HTMLElement): void {
     portraitCanvas.style.setProperty('--mx', `${mx}%`);
     portraitCanvas.style.setProperty('--my', `${my}%`);
   });
-  // the glowing half-mask that glides after the cursor across the face
-  mountPortraitMask(portraitCanvas);
 
   // Draggable ID badge with a physics-style spring back to rest on release.
   let dragging = false;
