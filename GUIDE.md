@@ -15,25 +15,26 @@ npm run dev
 
 | # | Asset | Where it goes | What happens |
 | --- | --- | --- | --- |
-| 1 | **Photo of Rajpal** (portrait, face centered, any size) | `public/rajpal.jpg` | Hero portrait and the About ID badge switch from the RG monogram to the real photo, auto-grayscaled to match the design |
-| 2 | **Resume PDF** | `public/RajpalResume.pdf` | Three resume buttons appear: nav pill, Connect section, footer. Until then they stay hidden so the site never shows a dead link |
-| 3 | **City confirmation** | one line in `src/data.ts` | Location card says "United States [EST]"; give the exact city (e.g. Cleveland) and it becomes "Cleveland, OH [EST]" |
-| 4 | **Instagram (or X/Twitter) link** | `src/data.ts` | The social row shows GitHub and LinkedIn; a third button is added the moment the link exists |
-| 5 | **Real experience / internship lines** (if any) | `src/data.ts` | The About section can carry an Experience card like the reference site does; currently it leads with education, which is real |
-| 6 | **Email confirmation** | already wired | The site uses rajpalgelot16705@gmail.com (from the previous portfolio). Say the word and it changes everywhere in one line |
-| 7 | **Higher-res project posters** (optional) | `public/projects/*.png` | Cards currently use the real screenshots from each repo. Any poster can be swapped 1:1 by replacing the file with the same name |
-| 8 | **Certification details** (optional) | `src/data.ts` | Same as experience: send title, issuer, years, and it gets a card |
+| 1 | **Photo of Rajpal** (portrait, face centered, any size) | `public/rajpal.jpg` | Hero portrait and the About ID badge switch from the RG monogram to the real photo, auto-grayscaled to match the design. The cybernetic HUD layer drops onto the real photo. Plus a better project poster using his photo is planned |
+| 2 | **Resume PDF** (final, after reviewing `Rajpal_Resume.docx`) | `public/RajpalResume.pdf` | Three resume buttons appear: nav pill, Connect section, footer. Until then they stay hidden so the site never shows a dead link |
+| 3 | **Phone number** | `Rajpal_Resume.docx` + portfolio contact | The resume has a gray +1 (XXX) XXX-XXXX placeholder; send the real number and it goes into the resume and the site |
+| 4 | **Real experience / internship lines** (if any) | `src/data.ts` + resume | The About section can carry an Experience card; currently projects serve as the experience section on both resume and site |
+| 5 | **Certification details** (optional) | `src/data.ts` + resume | Send title, issuer, years, and both get a section |
 
-## Items already resolved from GitHub and the old portfolio
+## Items already resolved (no longer pending)
 
 - Name: **Rajpal Gelot** (from the previous portfolio data)
 - Education: B.S. Computer Science, Cleveland State University, 2023 to 2027
 - GitHub: github.com/rajpalgelot-tech
 - LinkedIn: linkedin.com/in/rajpal-gelot-825b29298
-- Email: rajpalgelot16705@gmail.com
+- Instagram: instagram.com/gelot_rajpaal (third social button, live)
+- Email: rajpalgelot16705@gmail.com (confirmed by Rajpal)
+- City: Cleveland, OH (location card now shows "Cleveland, OH [EST]")
 - All 9 projects with descriptions, tech tags, screenshots, source links, and
   live demo links (pulled from the repo READMEs and language stats)
 - Tech stack: 18 tiles derived from the actual repo languages and tooling
+- Experience section: since there are no internships, the resume and the site
+  present the projects as the experience ("Projects & Experience")
 
 ## Deploy
 

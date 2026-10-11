@@ -257,18 +257,21 @@ img { display: block; max-width: 100%; }
   mix-blend-mode: difference;
 }
 
+/* soft translucent glow disk like the reference cursor; difference blend
+   keeps it visible on both dark and light surfaces */
 .cursor-ring {
-  width: 34px;
-  height: 34px;
-  border: 1px solid var(--line-strong);
-  transition: width 0.2s ease, height 0.2s ease, border-color 0.2s ease, background 0.2s ease, opacity 0.25s ease;
+  width: 26px;
+  height: 26px;
+  border: none;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.34) 0%, rgba(255, 255, 255, 0.16) 55%, rgba(255, 255, 255, 0) 75%);
+  mix-blend-mode: difference;
+  transition: width 0.25s ease, height 0.25s ease, opacity 0.25s ease;
 }
 
 .cursor-ring.grow {
-  width: 58px;
-  height: 58px;
-  border-color: var(--text);
-  background: rgba(128, 128, 128, 0.08);
+  width: 46px;
+  height: 46px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.22) 55%, rgba(255, 255, 255, 0) 78%);
 }
 
 /* viewfinder state: four corner brackets wrap the hovered card exactly */

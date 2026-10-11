@@ -2,7 +2,7 @@ import './styles.css';
 import {
   identity, tagline, philosophy, heroRoles, tickerItems, bioShort, bioFull,
   stack, projects, projectFilters, projectSubs, heroNameWords, specializations, footerStatus,
-  githubProfileUrl, linkedinUrl
+  githubProfileUrl, linkedinUrl, instagramUrl
 } from './data';
 import { stackIcon, glyph } from './icons';
 import { applyFilter, stepIndex, tickerLine, formatClock, mailtoLink } from './lib';
@@ -483,7 +483,13 @@ export function buildApp(root: HTMLElement): void {
   liBtn.rel = 'noreferrer';
   liBtn.dataset.hover = '1';
   liBtn.append(svg(glyph('linkedin')), el('span', '', 'LinkedIn'), svg(glyph('external')));
-  socialRow.append(ghBtn, liBtn);
+  const igBtn = el('a', 'social-btn') as HTMLAnchorElement;
+  igBtn.href = instagramUrl;
+  igBtn.target = '_blank';
+  igBtn.rel = 'noreferrer';
+  igBtn.dataset.hover = '1';
+  igBtn.append(svg(glyph('instagram')), el('span', '', 'Instagram'), svg(glyph('external')));
+  socialRow.append(ghBtn, liBtn, igBtn);
   const resumeBtn = el('a', 'social-btn resume-btn') as HTMLAnchorElement;
   resumeBtn.href = `./${identity.resumeFile}`;
   resumeBtn.dataset.hover = '1';
@@ -583,7 +589,7 @@ export function buildApp(root: HTMLElement): void {
     fLink('Connect', '#connect'), resumeFooterLink
   ]);
   const socialCol = col('Socials', [
-    fLink('GitHub', githubProfileUrl), fLink('LinkedIn', linkedinUrl)
+    fLink('GitHub', githubProfileUrl), fLink('LinkedIn', linkedinUrl), fLink('Instagram', instagramUrl)
   ]);
   const specCol = col('Specializations', specializations.map((s) => el('li', 'footer-item', s)));
   const networkCol = col('Direct Network', [
@@ -677,6 +683,27 @@ export function buildApp(root: HTMLElement): void {
   };
   window.addEventListener('scroll', onNavScroll, { passive: true });
   onNavScroll();
+
+  // Scroll-linked carousel sweep (desktop): while the projects section is on
+  // screen, page scroll drives the cards horizontally, like the reference.
+  if (window.matchMedia('(pointer: fine)').matches) {
+    let sweepQueued = false;
+    const sweep = (): void => {
+      sweepQueued = false;
+      const rect = projSec.getBoundingClientRect();
+      const vh = window.innerHeight;
+      if (rect.top >= vh || rect.bottom <= 0) return;
+      const progress = Math.min(1, Math.max(0, (vh - rect.top) / (vh + rect.height)));
+      const target = progress * (carousel.scrollWidth - carousel.clientWidth);
+      carousel.scrollLeft += (target - carousel.scrollLeft) * 0.3;
+    };
+    window.addEventListener('scroll', () => {
+      if (!sweepQueued) {
+        sweepQueued = true;
+        requestAnimationFrame(sweep);
+      }
+    }, { passive: true });
+  }
 
   // Local system time with milliseconds.
   const clockValue = clock.querySelector('.clock-value') as HTMLElement;

@@ -13,7 +13,7 @@ export const identity = {
   githubUser: 'rajpalgelot-tech',
   role: 'Software Developer & Systems Programmer',
   email: 'rajpalgelot16705@gmail.com',
-  location: 'United States [EST]',
+  location: 'Cleveland, OH [EST]',
   responseWindow: 'Within 24-48h',
   status: 'STATUS // OPEN TO INTERNSHIPS',
   // Photo slots: drop these files into public/ and they appear automatically.
@@ -23,6 +23,7 @@ export const identity = {
 
 export const githubProfileUrl = 'https://github.com/rajpalgelot-tech';
 export const linkedinUrl = 'https://www.linkedin.com/in/rajpal-gelot-825b29298';
+export const instagramUrl = 'https://www.instagram.com/gelot_rajpaal';
 
 export const tagline =
   'Building systems software you can open and break: a SQL engine written from ' +
