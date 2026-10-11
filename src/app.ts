@@ -6,6 +6,7 @@ import {
 } from './data';
 import { stackIcon, glyph } from './icons';
 import { applyFilter, stepIndex, tickerLine, formatClock, mailtoLink } from './lib';
+import { mountHoverMask } from './hoverMask';
 
 const el = (tag: string, cls = '', textContent = ''): HTMLElement => {
   const node = document.createElement(tag);
@@ -127,7 +128,11 @@ export function buildApp(root: HTMLElement): void {
     '<span class="hud-corner bl"></span><span class="hud-corner br"></span>' +
     '<span class="hud-read mono-label">SCAN 100% // LAYER LOCKED</span>' +
     '<span class="hud-id mono-label">CYBERNETIC LAYER // ACTIVE</span>';
-  portraitCanvas.append(monogram, photoImg, scan);
+  // WebGL layer that reveals the cybernetic mask through a fluid simulation
+  // while the cursor moves, exactly like the reference portrait.
+  const fluidCanvas = document.createElement('canvas');
+  fluidCanvas.className = 'portrait-fluid';
+  portraitCanvas.append(monogram, photoImg, fluidCanvas, scan);
   const hint = el('div', 'portrait-hint');
   hint.append(
     el('span', 'status-dot'),
@@ -799,6 +804,7 @@ export function buildApp(root: HTMLElement): void {
 
   // Portrait hover: move the scan layer with the cursor; once revealed the
   // cybernetic layer stays locked on, like the reference portrait.
+  mountHoverMask(portraitCanvas, fluidCanvas, `./${identity.maskFile}`);
   portraitCanvas.addEventListener('pointerenter', () => {
     portraitCanvas.classList.add('scanned');
   });

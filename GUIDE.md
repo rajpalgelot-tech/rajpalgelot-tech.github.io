@@ -34,6 +34,11 @@ npm run dev
   Hero portrait and the About ID badge show the real photo, and the cybernetic
   HUD layer sits on top of it
 
+- Portrait hover mask: matches the reference site exactly. The original mask
+  art is slotted as `public/hero-mask.png` and `src/hoverMask.ts` is a raw
+  WebGL port of the reference's fluid simulation (same shaders, parameters
+  and behavior, no added dependencies)
+
 - Name: **Rajpal Gelot** (from the previous portfolio data)
 - Education: B.S. Computer Science, Cleveland State University, 2023 to 2027
 - GitHub: github.com/rajpalgelot-tech

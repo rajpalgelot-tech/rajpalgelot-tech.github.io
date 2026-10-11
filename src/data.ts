@@ -18,6 +18,7 @@ export const identity = {
   status: 'STATUS // OPEN TO INTERNSHIPS',
   // Photo slots: drop these files into public/ and they appear automatically.
   photoFile: 'rajpal.jpg',
+  maskFile: 'hero-mask.png',
   resumeFile: 'RajpalResume.pdf'
 };
 
