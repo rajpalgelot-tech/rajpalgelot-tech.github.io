@@ -430,6 +430,9 @@ export function mountHoverMask(
   maskImg.onload = (): void => {
     const tex = glc.createTexture() as WebGLTexture;
     glc.bindTexture(glc.TEXTURE_2D, tex);
+    // three.js flips images on upload (flipY default true); match it so the
+    // mask art reads right side up in GL's bottom-origin UV space.
+    glc.pixelStorei(glc.UNPACK_FLIP_Y_WEBGL, true);
     glc.texParameteri(glc.TEXTURE_2D, glc.TEXTURE_MIN_FILTER, glc.LINEAR);
     glc.texParameteri(glc.TEXTURE_2D, glc.TEXTURE_MAG_FILTER, glc.LINEAR);
     glc.texParameteri(glc.TEXTURE_2D, glc.TEXTURE_WRAP_S, glc.CLAMP_TO_EDGE);
