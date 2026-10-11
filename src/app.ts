@@ -2,7 +2,7 @@ import './styles.css';
 import {
   identity, tagline, philosophy, heroRoles, tickerItems, bioShort, bioFull,
   stack, projects, projectFilters, projectSubs, heroNameWords, specializations, footerStatus,
-  githubProfileUrl, linkedinUrl, instagramUrl
+  githubProfileUrl, linkedinUrl, instagramUrl, developer
 } from './data';
 import { stackIcon, glyph } from './icons';
 import { applyFilter, stepIndex, tickerLine, formatClock, mailtoLink } from './lib';
@@ -66,7 +66,22 @@ export function buildApp(root: HTMLElement): void {
   themeBtn.dataset.hover = '1';
   themeBtn.setAttribute('aria-label', 'Toggle theme');
   themeBtn.append(svg(glyph('moon')));
-  navIcons.append(themeBtn);
+  // Mobile menu: toggles the link drawer shown at small widths.
+  const menuBtn = el('button', 'icon-btn nav-menu-btn') as HTMLButtonElement;
+  menuBtn.type = 'button';
+  menuBtn.dataset.hover = '1';
+  menuBtn.setAttribute('aria-label', 'Open menu');
+  menuBtn.setAttribute('aria-expanded', 'false');
+  menuBtn.append(svg(glyph('menu')));
+  const setMenu = (open: boolean): void => {
+    nav.classList.toggle('open', open);
+    menuBtn.replaceChildren(svg(glyph(open ? 'close' : 'menu')));
+    menuBtn.setAttribute('aria-expanded', String(open));
+    menuBtn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+  };
+  menuBtn.addEventListener('click', () => setMenu(!nav.classList.contains('open')));
+  links.addEventListener('click', () => setMenu(false));
+  navIcons.append(themeBtn, menuBtn);
   nav.append(navPill, resumePill, navIcons);
   root.append(nav);
 
@@ -123,9 +138,22 @@ export function buildApp(root: HTMLElement): void {
 
   const heroRight = el('div', 'hero-right');
   const philo = el('div', 'philosophy');
+  // Quote wraps only at the comma: each clause is an inline-block, so the
+  // line either fits whole or breaks cleanly into the two halves.
+  const quote = el('blockquote', 'philosophy-quote');
+  const commaAt = philosophy.indexOf(',');
+  if (commaAt > 0) {
+    quote.append(
+      el('span', 'q-clause', `\u201C${philosophy.slice(0, commaAt + 1)}`),
+      document.createTextNode(' '),
+      el('span', 'q-clause', `${philosophy.slice(commaAt + 2)}\u201D`)
+    );
+  } else {
+    quote.append(el('span', 'q-clause', `\u201C${philosophy}\u201D`));
+  }
   philo.append(
     monoLabel('// PHILOSOPHY', 'mono-label dim'),
-    el('blockquote', 'philosophy-quote', `\u201C${philosophy}\u201D`)
+    quote
   );
   const roles = el('div', 'hero-roles');
   for (const r of heroRoles) {
@@ -212,7 +240,7 @@ export function buildApp(root: HTMLElement): void {
   eduRow.append(
     (() => {
       const card = el('div', 'edu-card');
-      card.append(monoLabel('EDUCATION', 'mono-label dim'), el('p', 'edu-value', 'B.S. Computer Science'), el('p', 'mono-text dim', 'Cleveland State University, 2023 to 2027'));
+      card.append(monoLabel('EDUCATION', 'mono-label dim'), el('p', 'edu-value', 'B.S. Computer Science'), el('p', 'mono-text dim', 'Cleveland State University, 2023\u00A0to\u00A02027'));
       return card;
     })(),
     (() => {
@@ -254,7 +282,10 @@ export function buildApp(root: HTMLElement): void {
   /* ================= PROJECTS ================= */
   const projSec = el('section', 'section projects');
   projSec.id = 'projects';
-  projSec.append(sectionHeading('03', 'Projects'));
+  // The pin wrapper becomes a sticky full-height viewport on phones, so page
+  // scroll drives the carousel, like the reference portfolio.
+  const projPin = el('div', 'projects-pin');
+  projPin.append(sectionHeading('03', 'Projects'));
   const projGrid = el('div', 'projects-grid');
 
   const panel = el('aside', 'projects-panel reveal');
@@ -303,6 +334,27 @@ export function buildApp(root: HTMLElement): void {
 
   const carousel = el('div', 'carousel');
   carousel.setAttribute('tabindex', '0');
+
+  // Phones: the section pins full height and page scroll drives the carousel,
+  // so a spacer div below the pin provides the scroll runway (sticky travel is
+  // limited to the parent's content box, so padding alone would not work).
+  const isPinnedMobile = (): boolean => window.matchMedia('(max-width: 720px)').matches;
+  const runway = el('div', 'pin-runway');
+  runway.setAttribute('aria-hidden', 'true');
+  const syncRunway = (): void => {
+    if (isPinnedMobile()) {
+      const travel = carousel.scrollWidth - carousel.clientWidth;
+      runway.style.height = travel > 0 ? `${Math.round(travel)}px` : '';
+    } else {
+      runway.style.height = '';
+    }
+  };
+  // Pause the sweep while the visitor is swiping the carousel directly.
+  let touchHold = false;
+  carousel.addEventListener('touchstart', () => { touchHold = true; }, { passive: true });
+  carousel.addEventListener('touchend', () => {
+    window.setTimeout(() => { touchHold = false; }, 900);
+  }, { passive: true });
 
   const cards: HTMLElement[] = [];
   let activeFilter = 'all';
@@ -365,6 +417,7 @@ export function buildApp(root: HTMLElement): void {
     });
     updateCounter();
     carousel.scrollTo({ left: 0 });
+    syncRunway();
   };
 
   const updateCounter = (): void => {
@@ -418,7 +471,8 @@ export function buildApp(root: HTMLElement): void {
   window.addEventListener('resize', updateCounter);
 
   projGrid.append(panel, carousel);
-  projSec.append(projGrid);
+  projPin.append(projGrid);
+  projSec.append(projPin, runway);
   root.append(projSec);
   renderCards();
 
@@ -565,7 +619,26 @@ export function buildApp(root: HTMLElement): void {
   brand.append(
     brandLogo,
     el('p', 'footer-copy mono-text dim', `\u00A9 copyright ${identity.fullName} 2026. All rights reserved.`),
-    el('p', 'footer-credit mono-text dim', 'Designed & engineered by Heet Soni (GitHub: HeetSoni26).')
+    (() => {
+      const credit = el('div', 'footer-credit');
+      credit.append(
+        el('p', 'footer-credit-line mono-text dim', 'Designed & engineered by'),
+        el('p', 'footer-credit-name', developer.name)
+      );
+      const devBtn = el('a', 'dev-github-btn') as HTMLAnchorElement;
+      devBtn.href = developer.githubUrl;
+      devBtn.target = '_blank';
+      devBtn.rel = 'noreferrer';
+      devBtn.dataset.hover = '1';
+      devBtn.setAttribute('aria-label', `${developer.name} on GitHub`);
+      devBtn.append(
+        svg(glyph('github')),
+        el('span', 'mono-label', `@${developer.githubUser}`),
+        svg(glyph('external'))
+      );
+      credit.append(devBtn);
+      return credit;
+    })()
   );
   const cols = el('div', 'footer-cols');
   const col = (title: string, nodes: HTMLElement[]): HTMLElement => {
@@ -684,16 +757,26 @@ export function buildApp(root: HTMLElement): void {
   window.addEventListener('scroll', onNavScroll, { passive: true });
   onNavScroll();
 
-  // Scroll-linked carousel sweep (desktop): while the projects section is on
-  // screen, page scroll drives the cards horizontally, like the reference.
-  if (window.matchMedia('(pointer: fine)').matches) {
+  // Scroll-linked carousel sweep: while the projects section is on screen,
+  // page scroll drives the cards horizontally, like the reference. On phones
+  // the section pins full height, so the pin window drives the sweep instead.
+  {
     let sweepQueued = false;
     const sweep = (): void => {
       sweepQueued = false;
+      if (touchHold) return;
       const rect = projSec.getBoundingClientRect();
       const vh = window.innerHeight;
       if (rect.top >= vh || rect.bottom <= 0) return;
-      const progress = Math.min(1, Math.max(0, (vh - rect.top) / (vh + rect.height)));
+      let progress: number;
+      if (isPinnedMobile()) {
+        const travel = Math.max(1, runway.offsetHeight);
+        // the pin starts sticking once the section's own top padding has scrolled past
+        const start = parseFloat(getComputedStyle(projSec).paddingTop) || 0;
+        progress = Math.min(1, Math.max(0, (-rect.top - start) / travel));
+      } else {
+        progress = Math.min(1, Math.max(0, (vh - rect.top) / (vh + rect.height)));
+      }
       const target = progress * (carousel.scrollWidth - carousel.clientWidth);
       carousel.scrollLeft += (target - carousel.scrollLeft) * 0.3;
     };
@@ -703,6 +786,7 @@ export function buildApp(root: HTMLElement): void {
         requestAnimationFrame(sweep);
       }
     }, { passive: true });
+    window.addEventListener('resize', syncRunway);
   }
 
   // Local system time with milliseconds.

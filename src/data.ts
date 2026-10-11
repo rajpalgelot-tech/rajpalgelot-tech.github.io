@@ -25,6 +25,13 @@ export const githubProfileUrl = 'https://github.com/rajpalgelot-tech';
 export const linkedinUrl = 'https://www.linkedin.com/in/rajpal-gelot-825b29298';
 export const instagramUrl = 'https://www.instagram.com/gelot_rajpaal';
 
+// Site developer credit, shown in the footer with a button to his GitHub.
+export const developer = {
+  name: 'Heet Soni',
+  githubUser: 'HeetSoni26',
+  githubUrl: 'https://github.com/HeetSoni26'
+};
+
 export const tagline =
   'Building systems software you can open and break: a SQL engine written from ' +
   'scratch in C++ and compiled to WebAssembly, a Raft cluster that heals itself, ' +
