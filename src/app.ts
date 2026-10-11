@@ -1,7 +1,7 @@
 import './styles.css';
 import {
   identity, tagline, philosophy, heroRoles, tickerItems, bioShort, bioFull,
-  stack, projects, projectFilters, specializations, footerStatus,
+  stack, projects, projectFilters, projectSubs, heroNameWords, specializations, footerStatus,
   githubProfileUrl, linkedinUrl
 } from './data';
 import { stackIcon, glyph } from './icons';
@@ -107,11 +107,16 @@ export function buildApp(root: HTMLElement): void {
   photoImg.alt = identity.fullName;
   photoImg.hidden = true;
   const scan = el('div', 'portrait-scan');
+  scan.innerHTML =
+    '<span class="hud-corner tl"></span><span class="hud-corner tr"></span>' +
+    '<span class="hud-corner bl"></span><span class="hud-corner br"></span>' +
+    '<span class="hud-read mono-label">SCAN 100% // LAYER LOCKED</span>' +
+    '<span class="hud-id mono-label">CYBERNETIC LAYER // ACTIVE</span>';
   portraitCanvas.append(monogram, photoImg, scan);
   const hint = el('div', 'portrait-hint');
   hint.append(
     el('span', 'status-dot'),
-    el('span', 'mono-label', 'MOVE CURSOR OVER PORTRAIT TO REVEAL THE GRID LAYER')
+    el('span', 'mono-label', 'MOVE CURSOR OVER PORTRAIT TO REVEAL CYBERNETIC LAYER')
   );
   portrait.append(portraitCanvas, hint);
   heroCenter.append(portrait);
@@ -178,8 +183,12 @@ export function buildApp(root: HTMLElement): void {
   badgeImg.alt = `${identity.fullName} portrait`;
   badgeImg.hidden = true;
   badgePhoto.append(badgeMonogram, badgeImg);
-  const badgeName = el('div', 'badge-name mono-label', `${identity.fullName.toUpperCase()} // DEV`);
-  badge.append(badgeTop, badgeHole, badgeStrap, badgePhoto, badgeName);
+  const badgeFoot = el('div', 'badge-foot');
+  badgeFoot.append(
+    monoLabel('DRAG // INTERACTIVE', 'mono-label dim'),
+    monoLabel(`${identity.fullName.toUpperCase()} // DEV`, 'mono-label dim')
+  );
+  badge.append(badgeTop, badgeHole, badgeStrap, badgePhoto, badgeFoot);
   badgeWrap.append(badge);
 
   const aboutCopy = el('div', 'about-copy');
@@ -232,7 +241,7 @@ export function buildApp(root: HTMLElement): void {
   const grid = el('div', 'stack-grid');
   stack.forEach((item, i) => {
     const tile = el('div', 'stack-tile reveal');
-    tile.dataset.hover = '1';
+    tile.dataset.target = '1';
     tile.style.transitionDelay = `${(i % 9) * 40}ms`;
     const iconBox = el('div', 'stack-icon');
     iconBox.innerHTML = stackIcon(item.icon);
@@ -263,6 +272,7 @@ export function buildApp(root: HTMLElement): void {
     row.dataset.hover = '1';
     row.dataset.filter = f.key;
     row.append(
+      el('span', 'filter-dash'),
       el('span', 'filter-index mono-label dim', String(i + 1).padStart(2, '0')),
       el('span', 'filter-name', f.label)
     );
@@ -303,7 +313,7 @@ export function buildApp(root: HTMLElement): void {
     visible.forEach((p, i) => {
       const card = el('button', 'project-card reveal in') as HTMLButtonElement;
       card.type = 'button';
-      card.dataset.hover = '1';
+      card.dataset.target = '1';
       card.setAttribute('aria-label', `Project ${p.name}`);
       const inner = el('div', 'card-inner');
       const front = el('div', 'card-front');
@@ -311,18 +321,18 @@ export function buildApp(root: HTMLElement): void {
       img.src = p.poster;
       img.alt = `${p.name} screenshot`;
       img.loading = 'lazy';
-      const frontInfo = el('div', 'card-front-info');
-      frontInfo.append(
-        el('span', 'card-cat mono-label', p.category.toUpperCase()),
-        el('h4', 'card-name', p.name)
-      );
-      const flipBackHint = el('span', 'card-flip-hint mono-label dim', 'Click to Flip \u21A9');
-      front.append(img, frontInfo, flipBackHint);
+      front.append(img);
       const back = el('div', 'card-back');
       const backInner = el('div', 'card-back-inner');
+      const backHead = el('div', 'card-back-head');
+      backHead.append(
+        el('span', 'card-cat-chip mono-label', p.category.toUpperCase()),
+        el('span', 'card-flip-hint mono-label dim', 'Click to Flip Back \u21A9')
+      );
       backInner.append(
-        el('span', 'card-cat mono-label dim', p.category.toUpperCase()),
+        backHead,
         el('h4', 'card-name back', p.name),
+        el('p', 'card-sub mono-text dim', projectSubs[p.id] ?? ''),
         el('p', 'card-desc mono-text dim', p.tagline)
       );
       const tagRow = el('div', 'card-tags');
@@ -479,8 +489,9 @@ export function buildApp(root: HTMLElement): void {
   resumeBtn.dataset.hover = '1';
   resumeBtn.append(svg(glyph('download')), el('span', '', 'DOWNLOAD RESUME (PDF)'));
   resumeBtn.hidden = true; // unhidden by the resume probe
-  socialRow.append(resumeBtn);
-  socialsBlock.append(socialRow);
+  const resumeRow = el('div', 'resume-row');
+  resumeRow.append(resumeBtn);
+  socialsBlock.append(socialRow, resumeRow);
 
   connectLeft.append(emailCard, metaRow, socialsBlock);
 
@@ -516,15 +527,17 @@ export function buildApp(root: HTMLElement): void {
   messageInput.id = 'cf-message';
   messageInput.required = true;
   messageInput.placeholder = 'Tell me about the role, project, or timeline...';
+  const formRow = el('div', 'form-row');
   const f1 = makeField('YOUR NAME *', 'cf-name'); f1.append(nameInput);
   const f2 = makeField('YOUR EMAIL *', 'cf-email'); f2.append(emailInput);
+  formRow.append(f1, f2);
   const f3 = makeField('PROJECT / ROLE SUBJECT', 'cf-subject'); f3.append(subjectInput);
   const f4 = makeField('YOUR MESSAGE *', 'cf-message'); f4.append(messageInput);
   const sendBtn = el('button', 'btn btn-light btn-wide') as HTMLButtonElement;
   sendBtn.type = 'submit';
   sendBtn.dataset.hover = '1';
   sendBtn.textContent = 'DISPATCH MESSAGE';
-  form.append(f1, f2, f3, f4, sendBtn);
+  form.append(formRow, f3, f4, sendBtn);
   form.addEventListener('submit', (ev) => {
     ev.preventDefault();
     const href = mailtoLink(
@@ -615,16 +628,55 @@ export function buildApp(root: HTMLElement): void {
     applyTheme(rootEl.dataset.theme === 'dark' ? 'light' : 'dark');
   });
 
-  // Hero name typing animation, then a blinking caret.
+  // Hero name: endless typing loop cycling name and handle, like the reference.
+  let wordIndex = 0;
   let letter = 0;
-  const typeTick = (): void => {
-    letter += 1;
-    nameText.textContent = identity.firstName.slice(0, letter);
-    if (letter < identity.firstName.length) {
-      setTimeout(typeTick, 120);
+  let deleting = false;
+  const typeLoop = (): void => {
+    const word = heroNameWords[wordIndex];
+    if (!deleting) {
+      letter += 1;
+      nameText.textContent = word.slice(0, letter);
+      if (letter >= word.length) {
+        deleting = true;
+        setTimeout(typeLoop, 2400);
+        return;
+      }
+      setTimeout(typeLoop, 95);
+    } else {
+      letter -= 1;
+      nameText.textContent = word.slice(0, letter);
+      if (letter <= 0) {
+        deleting = false;
+        wordIndex = (wordIndex + 1) % heroNameWords.length;
+        setTimeout(typeLoop, 500);
+        return;
+      }
+      setTimeout(typeLoop, 42);
     }
   };
-  setTimeout(typeTick, 350);
+  setTimeout(typeLoop, 500);
+
+  // Nav: scrollspy pill plus link collapse on scroll down, restore on scroll up.
+  const navLinks = [...nav.querySelectorAll<HTMLAnchorElement>('.nav-link')];
+  const spySections = ['hero', 'about', 'stack', 'projects', 'connect']
+    .map((id) => document.getElementById(id))
+    .filter((s): s is HTMLElement => s !== null);
+  let lastY = window.scrollY;
+  const onNavScroll = (): void => {
+    const y = window.scrollY;
+    nav.classList.toggle('nav-collapsed', y > 520 && y > lastY + 2);
+    lastY = y;
+    let current = 'hero';
+    for (const s of spySections) {
+      if (s.getBoundingClientRect().top <= window.innerHeight * 0.45) current = s.id;
+    }
+    for (const a of navLinks) {
+      a.classList.toggle('active', a.getAttribute('href') === `#${current}`);
+    }
+  };
+  window.addEventListener('scroll', onNavScroll, { passive: true });
+  onNavScroll();
 
   // Local system time with milliseconds.
   const clockValue = clock.querySelector('.clock-value') as HTMLElement;
@@ -634,7 +686,11 @@ export function buildApp(root: HTMLElement): void {
   tickClock();
   setInterval(tickClock, 47);
 
-  // Portrait hover: move the scan layer with the cursor.
+  // Portrait hover: move the scan layer with the cursor; once revealed the
+  // cybernetic layer stays locked on, like the reference portrait.
+  portraitCanvas.addEventListener('pointerenter', () => {
+    portraitCanvas.classList.add('scanned');
+  });
   portraitCanvas.addEventListener('pointermove', (ev) => {
     const rect = portraitCanvas.getBoundingClientRect();
     const mx = ((ev.clientX - rect.left) / rect.width) * 100;
@@ -643,35 +699,32 @@ export function buildApp(root: HTMLElement): void {
     portraitCanvas.style.setProperty('--my', `${my}%`);
   });
 
-  // Draggable ID badge (pointer based, works on touch too).
+  // Draggable ID badge with a physics-style spring back to rest on release.
   let dragging = false;
   let startX = 0;
   let startY = 0;
-  let baseX = 0;
-  let baseY = 0;
   badge.addEventListener('pointerdown', (ev) => {
     dragging = true;
     startX = ev.clientX;
     startY = ev.clientY;
     badge.setPointerCapture(ev.pointerId);
     badge.classList.add('dragging');
+    badge.classList.remove('settle');
+    badge.style.transition = 'none';
   });
   badge.addEventListener('pointermove', (ev) => {
     if (!dragging) return;
     const dx = ev.clientX - startX;
     const dy = ev.clientY - startY;
-    badge.style.transform = `translate(${baseX + dx}px, ${baseY + dy}px) rotate(${dx * 0.04}deg)`;
+    badge.style.transform = `translate(${dx}px, ${dy}px) rotate(${dx * 0.05}deg)`;
   });
   badge.addEventListener('pointerup', (ev) => {
     if (!dragging) return;
     dragging = false;
-    const style = badge.style.transform;
-    const m = /translate\(([-\d.]+)px,\s*([-\d.]+)px\)/.exec(style);
-    if (m !== null) {
-      baseX = Number(m[1]);
-      baseY = Number(m[2]);
-    }
     badge.classList.remove('dragging');
+    badge.style.transition = 'transform 1.1s cubic-bezier(0.2, 1.6, 0.35, 1)';
+    badge.style.transform = 'translate(0px, 0px) rotate(0deg)';
+    window.setTimeout(() => { badge.style.transition = ''; }, 1100);
     try { badge.releasePointerCapture(ev.pointerId); } catch { /* already released */ }
   });
 

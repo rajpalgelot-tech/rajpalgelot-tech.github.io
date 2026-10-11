@@ -276,6 +276,22 @@ export const projectFilters: { key: string; label: string }[] = [
   { key: 'Full Stack', label: 'FULL STACK' }
 ];
 
+/** Short descriptor shown on the flipped card, under the project name. */
+export const projectSubs: Record<string, string> = {
+  'rg-sql': 'SQL Database Engine in WebAssembly',
+  raft: 'Raft Consensus Playground',
+  blockchain: 'Tamper-Evident Blockchain Lab',
+  pipeline: 'Five-Stage CPU Pipeline Visualizer',
+  regex: 'Thompson NFA & Subset DFA Builder',
+  heap: 'Memory Allocator Sandbox',
+  crdt: 'RGA CRDT Collaboration Demo',
+  'job-tracker': 'Application Pipeline Analytics',
+  booking: 'Room & Equipment Scheduling'
+};
+
+/** Words cycled by the hero typing animation, like the reference site. */
+export const heroNameWords: string[] = ['RAJPAL GELOT', 'RAJPALGELOT'];
+
 export const specializations: string[] = [
   'Systems Programming',
   'Full-Stack Platforms',
