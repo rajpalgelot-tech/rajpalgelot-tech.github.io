@@ -4,6 +4,13 @@ The portfolio is live and complete. A few slots are intentionally left for
 assets only Rajpal can provide. Everything is wired: drop a file in place and
 the site picks it up with no code changes.
 
+## Credits
+
+- Site design and development: **Heet Soni** (github.com/HeetSoni26),
+  also credited in the footer of the site itself.
+- Portfolio owner and content source: **Rajpal Gelot**
+  (github.com/rajpalgelot-tech).
+
 ## How to run locally
 
 ```bash
