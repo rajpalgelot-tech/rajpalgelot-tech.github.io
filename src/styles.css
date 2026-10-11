@@ -1186,6 +1186,36 @@ img { display: block; max-width: 100%; }
   gap: 1.2rem;
 }
 
+/* Submission status line (FormSubmit relay) and the hidden honeypot field. */
+.form-status {
+  min-height: 1.1em;
+  margin: 0.85rem 0 0;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+}
+
+.form-status[data-state='sent'] { color: #7ef0b2; }
+:root[data-theme='light'] .form-status[data-state='sent'] { color: #0a7a45; }
+.form-status[data-state='error'] { color: #ff8f8f; }
+:root[data-theme='light'] .form-status[data-state='error'] { color: #b3261e; }
+
+.form-fallback {
+  color: var(--text);
+  text-decoration: underline;
+  margin-left: 0.35rem;
+}
+
+.btn:disabled { opacity: 0.55; cursor: progress; }
+
+.form-honey {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
 .form-title { font-family: var(--font-display); font-weight: 700; font-size: 1.6rem; }
 
 .contact-form { display: flex; flex-direction: column; gap: 1.1rem; margin-top: 0.4rem; }

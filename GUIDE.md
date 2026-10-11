@@ -27,6 +27,7 @@ npm run dev
 | 3 | **Real experience / internship lines** (if any) | `src/data.ts` + resume | The About section can carry an Experience card; currently projects serve as the experience section on both resume and site |
 | 4 | **Certification details** (optional) | `src/data.ts` + resume | Send title, issuer, years, and both get a section |
 | 5 | **Custom project poster** (optional) | `public/projects/` | A poster design using Rajpal's photo for the project cards, replacing the current screenshots |
+| 6 | **FormSubmit activation** (one click, Rajpal only) | His Gmail inbox | FormSubmit sent an "Activate Form" email to rajpalgelot16705@gmail.com on first submission; Rajpal clicks the link once and every contact form submission lands in his inbox |
 
 ## Items already resolved (no longer pending)
 

@@ -602,13 +602,66 @@ export function buildApp(root: HTMLElement): void {
   sendBtn.type = 'submit';
   sendBtn.dataset.hover = '1';
   sendBtn.textContent = 'DISPATCH MESSAGE';
-  form.append(formRow, f3, f4, sendBtn);
+  // Hidden honeypot: bots fill it, humans never see it, FormSubmit drops those.
+  const honey = document.createElement('input');
+  honey.type = 'text';
+  honey.name = '_honey';
+  honey.tabIndex = -1;
+  honey.autocomplete = 'off';
+  honey.className = 'form-honey';
+  const formStatus = el('p', 'form-status mono-text dim');
+  formStatus.setAttribute('role', 'status');
+  formStatus.setAttribute('aria-live', 'polite');
+  form.append(formRow, f3, f4, sendBtn, honey, formStatus);
+  // Delivery: FormSubmit relays each submission to Rajpal's inbox as an email.
+  // The very first submission emails him an activation link to click once.
   form.addEventListener('submit', (ev) => {
     ev.preventDefault();
-    const href = mailtoLink(
-      identity.email, nameInput.value, emailInput.value, subjectInput.value, messageInput.value
-    );
-    window.location.href = href;
+    if (sendBtn.disabled) return;
+    sendBtn.disabled = true;
+    sendBtn.textContent = 'TRANSMITTING...';
+    formStatus.dataset.state = 'sending';
+    formStatus.textContent = "// TRANSMITTING TO RAJPAL'S INBOX...";
+    fetch(`https://formsubmit.co/ajax/${identity.email}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({
+        name: nameInput.value,
+        email: emailInput.value,
+        title: subjectInput.value,
+        message: messageInput.value,
+        _subject:
+          subjectInput.value.trim() !== ''
+            ? subjectInput.value
+            : `Portfolio inquiry from ${nameInput.value}`,
+        _template: 'table',
+        _captcha: 'false'
+      })
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && String(data.success) === 'true') {
+          formStatus.dataset.state = 'sent';
+          formStatus.textContent = '// DELIVERED. RAJPAL WILL REPLY WITHIN 24-48H.';
+          form.reset();
+        } else {
+          throw new Error((data && data.message) || 'delivery failed');
+        }
+      })
+      .catch(() => {
+        formStatus.dataset.state = 'error';
+        formStatus.textContent = '// TRANSMISSION FAILED. DIRECT MAIL LINK: ';
+        const fallback = el('a', 'form-fallback') as HTMLAnchorElement;
+        fallback.href = mailtoLink(
+          identity.email, nameInput.value, emailInput.value, subjectInput.value, messageInput.value
+        );
+        fallback.textContent = 'open mail app';
+        formStatus.append(fallback);
+      })
+      .finally(() => {
+        sendBtn.disabled = false;
+        sendBtn.textContent = 'DISPATCH MESSAGE';
+      });
   });
   formCard.append(form);
   connectGrid.append(connectLeft, formCard);
