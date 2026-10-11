@@ -290,7 +290,7 @@ export const projectSubs: Record<string, string> = {
 };
 
 /** Words cycled by the hero typing animation, like the reference site. */
-export const heroNameWords: string[] = ['RAJPAL GELOT', 'RAJPALGELOT'];
+export const heroNameWords: string[] = ['RAJPAL'];
 
 export const specializations: string[] = [
   'Systems Programming',
